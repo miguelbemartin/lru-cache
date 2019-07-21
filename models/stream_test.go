@@ -35,6 +35,24 @@ func TestStream_Append(t *testing.T) {
 					Key:   "key2",
 					Value: "value 2",
 				},
+				{
+					Key:   "key3",
+					Value: "value 3",
+				},
+			},
+			sizeExpected: 3,
+			limit:        10,
+		},
+		{
+			elements: []Element{
+				{
+					Key:   "key1",
+					Value: "value 1",
+				},
+				{
+					Key:   "key2",
+					Value: "value 2",
+				},
 			},
 			sizeExpected: 1,
 			limit:        1,
