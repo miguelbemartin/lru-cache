@@ -1,45 +1,49 @@
 package lrucache
 
-import "errors"
+import (
+	"github.com/miguelbemartin/lru-cache/models"
+)
 
 type client struct {
-	Size   int
-	Memory map[string]interface{}
+	size   int
+	stream *models.Stream
 }
 
 func NewLRUCache(size int) (*client, error) {
+	stream := models.Stream{
+		Length: 0,
+		Limit:  size,
+	}
+
 	c := &client{
-		Size:   size,
-		Memory: make(map[string]interface{}),
+		size:   size,
+		stream: &stream,
 	}
 
 	return c, nil
 }
 
-func (c *client) Set(key string, value string) error {
-
-	if (len(c.Memory) >= c.Size) {
-
+func (c *client) Set(key string, value interface{}) error {
+	newElement := models.Element{
+		Key:   key,
+		Value: value,
 	}
 
-	c.Memory[key] = value
+	c.stream.Append(&newElement)
 
 	return nil
 }
 
 func (c *client) Get(key string) (interface{}, error) {
-	value, ok := c.Memory[key]
-	if !ok {
-		return nil, errors.New("element not found")
+	value, err := c.stream.Get(key)
+	if err != nil {
+		return nil, err
 	}
 
 	return value, nil
 }
 
 func (c *client) Prune() error {
-	for k := range c.Memory {
-		delete(c.Memory, k)
-	}
-
+	c.stream.RemoveAll()
 	return nil
 }

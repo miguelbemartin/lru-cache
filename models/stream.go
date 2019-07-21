@@ -1,15 +1,18 @@
 package models
 
-import "errors"
+import (
+	"errors"
+)
 
 type Stream struct {
-	length int
+	Length int
+	Limit  int
 	start  *Element
 	end    *Element
 }
 
 func (s *Stream) Append(newElement *Element) {
-	if s.length == 0 {
+	if s.Length == 0 {
 		s.start = newElement
 		s.end = newElement
 	} else {
@@ -17,18 +20,40 @@ func (s *Stream) Append(newElement *Element) {
 		lastElement.next = newElement
 		s.end = newElement
 	}
-	s.length++
+
+	if s.Length == s.Limit {
+		s.start = s.start.next
+	} else {
+		s.Length++
+	}
+}
+
+func (s *Stream) Get(key string) (*Element, error) {
+	if s.Length == 0 {
+		return nil, errors.New("stream is empty")
+	}
+
+	currentElement := s.start
+
+	for currentElement.Key != key {
+		if currentElement.next == nil {
+			return nil, errors.New("no such Element found")
+		}
+		currentElement = currentElement.next
+	}
+
+	return currentElement, nil
 }
 
 func (s *Stream) Remove(key string) {
-	if s.length == 0 {
+	if s.Length == 0 {
 		panic(errors.New("stream is empty"))
 	}
 
 	var previousElement *Element
 	currentElement := s.start
 
-	for currentElement.key != key {
+	for currentElement.Key != key {
 		if currentElement.next == nil {
 			panic(errors.New("no such Element found"))
 		}
@@ -38,5 +63,11 @@ func (s *Stream) Remove(key string) {
 	}
 	previousElement.next = currentElement.next
 
-	s.length--
+	s.Length--
+}
+
+func (s *Stream) RemoveAll() {
+	s.Length = 0
+	s.start = nil
+	s.end = nil
 }

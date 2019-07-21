@@ -1,7 +1,7 @@
 package models
 
 type Element struct {
-	key   string
-	value interface{}
+	Key   string
+	Value interface{}
 	next  *Element
 }
