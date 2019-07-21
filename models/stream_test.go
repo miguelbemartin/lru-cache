@@ -98,18 +98,43 @@ func TestStream_Get(t *testing.T) {
 			key:           "key1",
 			errorExpected: "no such element found",
 		},
+		{
+			elements: []Element{
+				{
+					Key:   "key3",
+					Value: "value 3",
+				},
+				{
+					Key:   "key4",
+					Value: "value 4",
+				},
+				{
+					Key:   "key5",
+					Value: "value 5",
+				},
+			},
+			limit:         10,
+			key:           "key4",
+			errorExpected: "",
+		},
 	}
 
 	for i, test := range tests {
-		stream := Stream{
-			Limit:  test.limit,
-			Length: 0,
-		}
 
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 
+			stream := Stream{
+				Limit:  test.limit,
+				Length: 0,
+			}
+
 			for _, element := range test.elements {
-				stream.Append(&element)
+				newElement := Element{
+					Key:   element.Key,
+					Value: element.Value,
+					next:  nil,
+				}
+				stream.Append(&newElement)
 			}
 
 			_, err := stream.Get(test.key)
