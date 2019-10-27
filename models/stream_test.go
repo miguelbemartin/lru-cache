@@ -67,7 +67,12 @@ func TestStream_Append(t *testing.T) {
 
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
 			for _, element := range test.elements {
-				stream.Append(&element)
+				newElement := Element{
+					Key:   element.Key,
+					Value: element.Value,
+					next:  nil,
+				}
+				stream.Append(&newElement)
 			}
 			if stream.Length != test.sizeExpected {
 				t.Errorf("Test failed: wrong size: %d\ngot:  %d", test.sizeExpected, stream.Length)

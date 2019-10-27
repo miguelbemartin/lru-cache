@@ -1,6 +1,7 @@
 package lrucache
 
 import (
+	"errors"
 	"github.com/miguelbemartin/lru-cache/models"
 )
 
@@ -10,6 +11,12 @@ type client struct {
 }
 
 func NewLRUCache(size int) (*client, error) {
+
+	// Check if the size is higher than 0
+	if size <= 0 {
+		return nil, errors.New("size should be higher than 0")
+	}
+
 	stream := models.Stream{
 		Length: 0,
 		Limit:  size,
