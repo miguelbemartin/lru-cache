@@ -36,7 +36,7 @@ func (s *Stream) Append(newElement *Element) {
 	}
 }
 
-func (s *Stream) Get(key string) (*Element, error) {
+func (s *Stream) Get(key string) (interface{}, error) {
 	if s.Length == 0 {
 		return nil, errors.New("stream is empty")
 	}
@@ -50,7 +50,7 @@ func (s *Stream) Get(key string) (*Element, error) {
 		currentElement = currentElement.next
 	}
 
-	return currentElement, nil
+	return currentElement.Value, nil
 }
 
 func (s *Stream) Remove(key string) {
