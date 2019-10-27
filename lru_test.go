@@ -21,7 +21,7 @@ func TestNewLRUCache(t *testing.T) {
 			args: args{
 				size: -1,
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 		{
@@ -29,7 +29,7 @@ func TestNewLRUCache(t *testing.T) {
 			args: args{
 				size: 0,
 			},
-			want: nil,
+			want:    nil,
 			wantErr: true,
 		},
 		{
@@ -56,6 +56,56 @@ func TestNewLRUCache(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewLRUCache() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_client_Set(t *testing.T) {
+	type fields struct {
+		size   int
+		stream *models.Stream
+	}
+	type args struct {
+		key   string
+		value interface{}
+	}
+	tests := []struct {
+		name         string
+		fields       fields
+		args         args
+		wantErr      bool
+		sizeExpected int
+	}{
+		{
+			name: "correct",
+			fields: fields{
+				size: 1,
+				stream: &models.Stream{
+					Length: 0,
+					Limit:  1,
+				},
+			},
+			args: args{
+				key:   "key",
+				value: "value",
+			},
+			wantErr:      false,
+			sizeExpected: 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &client{
+				size:   tt.fields.size,
+				stream: tt.fields.stream,
+			}
+			if err := c.Set(tt.args.key, tt.args.value); (err != nil) != tt.wantErr {
+				t.Errorf("Set() error = %v, wantErr %v", err, tt.wantErr)
+			}
+
+			if c.stream.Length != tt.sizeExpected {
+				t.Errorf("size expected %v, size found %v", tt.sizeExpected, c.stream.Length)
 			}
 		})
 	}
