@@ -64,7 +64,7 @@ func main() {
 
 ## Run the tests
 ```
-go test . -v
+go test ./... -v
 ```
 
 ## Contributing
